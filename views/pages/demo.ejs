@@ -1,0 +1,51 @@
+<div id="demo" v-cloak>
+    <div class="container">
+        <table class="table border-2">
+            <tr class="text-center">
+                <th>S.No</th>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Address</th>
+                <th>Action</th>
+            </tr>
+            <% for(let [index,user] of users.entries()) { %>
+                <tr class="text-center">
+                    <td class="col-1">
+                        <%= index+1 %>
+                    </td>
+                    <td class="col-3">
+                        <%= user.name %>
+                    </td>
+                    <td class="col-2">
+                        <%= user.age %>
+                    </td>
+                    <td class="col-3">
+                        <%= user.address %>
+                    </td>
+                    <td class="col-3"><button class="btn btn-sm btn-primary"
+                            @click="editUser(<%= user.id %>)">Edit</button>
+                    </td>
+                </tr>
+                <% } %>
+        </table>
+    </div>
+
+    <!-- <div class="modal fade" id="editUserData" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit User Data</h5>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <label for="">Name</label>
+                        <input type="">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+</div>
+<%- /* Expose server-rendered data as window.SAILS_LOCALS :: */ exposeLocalsToBrowser() %>

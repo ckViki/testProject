@@ -1,0 +1,31 @@
+<div id="add-user" v-cloak>
+  <div class="container-fluid py-5">
+    <h1 class="text-center">Add User Data</h1>
+    <div style="max-width: 450px;" class="mx-auto">
+      <hr/>
+      <ajax-form action="addUser" :syncing.sync="syncing" :cloud-error.sync="cloudError" :form-data="formData" :form-rules="formRules" :form-errors.sync="formErrors" @submitted="submittedForm(formData)">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Name" :class="[formErrors.name ? 'is-invalid' : '']" v-model.trim="formData.name" autocomplete="name" focus-first>
+          <div class="invalid-feedback" v-if="formErrors.name">Please provide a User Name.</div>
+        </div>
+        <div class="form-group">
+          <input type="number" class="form-control" placeholder="Age" :class="[formErrors.age ? 'is-invalid' : '']" v-model.trim="formData.age" autocomplete="age">
+          <div class="invalid-feedback" v-if="formErrors.age">Please enter your Age.</div>
+        </div>
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Address1" :class="[formErrors.address1 ? 'is-invalid' : '']" v-model.trim="formData.address1" autocomplete="address1">
+          <div class="invalid-feedback" v-if="formErrors.address1">Please provide a user address1.</div>
+        </div>
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Address2" :class="[formErrors.address2 ? 'is-invalid' : '']" v-model.trim="formData.address2" autocomplete="address2">
+          <div class="invalid-feedback" v-if="formErrors.address2">Please provide a user address2.</div>
+        </div>
+        <div class="form-group">
+          <ajax-button :syncing="syncing" class="btn-dark btn-lg btn-block">Add User</ajax-button>
+        </div>
+      </ajax-form>
+      <p class="text-center"><a href="/users">View user list</a></p>
+    </div>
+  </div>
+</div>
+<%- /* Expose server-rendered data as window.SAILS_LOCALS :: */ exposeLocalsToBrowser() %>

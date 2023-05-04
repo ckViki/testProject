@@ -1,0 +1,377 @@
+<div id="all" v-cloak>
+  <div class="mx-2">
+    <div class="d-flex mt-2">
+      <div class="text-center">
+        <h4 class="font-weight-bold">User List</h4>
+      </div>
+      <div class="ml-auto">
+        <button class="btn btn-primary btn-sm" type="button" data-toggle="modal" data-target="#addUserModal">+
+          Add</button>
+        <!-- <button class="btn btn-primary btn-sm" @click="openAddUserModal()">Add</button> -->
+      </div>
+    </div>
+    <table class="table table-hover">
+      <thead class="thead-light">
+        <tr>
+          <th class="col-auto">#</th>
+          <th class="col-auto">Name</th>
+          <th class="col-auto mx-0">Email</th>
+          <th class="col-auto mx-0">Phone Number</th>
+          <th class="col-auto mx-0">Age</th>
+          <th class="col-auto">Address 1</th>
+          <th class="col-auto">Address 2</th>
+          <th class="col-auto mx-0">ZipCode</th>
+          <!-- <th class="col-auto mx-0">Age</th> -->
+          <th class="col-auto">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for(let [index,user] of users.entries()) { %>
+          <tr>
+            <td class="col-auto">
+              <%= index+1 %>
+            </td>
+            <td class="col-auto">
+              <%= user.name %>
+            </td>
+            <td class="col-auto mx-0">
+              <%= user.emailAddress %>
+            </td>
+            <td class="col-auto mx-0">
+              <%= user.countryCode %>-<%= user.phNumber %>
+            </td>
+            <td class="col-auto mx-0">
+              <%= user.age %>
+            </td>
+            <td class="col-auto">
+              <%= user.address1 %>
+            </td>
+            <td class="col-auto">
+              <%= user.address2 %>
+            </td>
+            <td class="col-auto">
+              <%= user.zipCode %>
+            </td>
+            <!-- <td class="col-3"><a class="btn btn-sm btn-primary" href="/user/edit/<%= user.id %>">Edit</a>
+            <button class="btn btn-sm btn-danger" href="/user/delete/<%= user.id %>">Delete</button>
+            </td> -->
+            <td class="col-auto">
+              <!-- <button class="btn btn-sm btn-primary"
+              @click="openEditUserModal(<%= JSON.stringify(user) %>)">Edit</button> -->
+              <button class="btn btn-primary btn-sm" type="button"
+                @click="openEditUserModal(<%= JSON.stringify(user) %>)">Edit</button>
+              <button class="btn btn-sm btn-danger"
+                @click="openDeleteUserModal(<%= JSON.stringify(user) %>)">Delete</button>
+            </td>
+          </tr>
+          <% } %>
+      </tbody>
+    </table>
+  </div>
+
+  <router-view></router-view>
+
+  <!-- Add User Modal -->
+  <modal v-if="modal==='addUser'" @close="closeModal()" v-cloak>
+    <div class="modal-header">
+      <h2 class="modal-title">Add User</h2>
+    </div>
+    <div class="modal-body">
+      <hr />
+      <div style="max-width: 500px;" class="mx-auto">
+        <ajax-form action="addUser" :syncing.sync="syncing" :cloud-error.sync="cloudError" :form-data="formData"
+          :form-rules="formRules" :form-errors.sync="formErrors" @submitted="submittedForm()">
+          <div class="form-group">
+            <input type="text" class="form-control" placeholder="Name" :class="[formErrors.name ? 'is-invalid' : '']"
+              v-model.trim="formData.name" autocomplete="name" focus-first>
+            <div class="invalid-feedback" v-if="formErrors.name">Please provide a User Name.</div>
+          </div>
+          <div class="form-group">
+            <input type="number" class="form-control" placeholder="Age" :class="[formErrors.age ? 'is-invalid' : '']"
+              v-model.trim="formData.age" autocomplete="age">
+            <div class="invalid-feedback" v-if="formErrors.age">Please enter your Age.</div>
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-control" placeholder="Address1"
+              :class="[formErrors.address1 ? 'is-invalid' : '']" v-model.trim="formData.address1"
+              autocomplete="address1">
+            <div class="invalid-feedback" v-if="formErrors.address1">Please provide a user address1.</div>
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-control" placeholder="Address2(optional)"
+              :class="[formErrors.address2 ? 'is-invalid' : '']" v-model.trim="formData.address2"
+              autocomplete="address2">
+            <div class="invalid-feedback" v-if="formErrors.address2">Please provide a user address2.</div>
+          </div>
+          <div class="form-group">
+            <input type="string" class="form-control" placeholder="Email Address"
+              :class="[formErrors.emailAddress ? 'is-invalid' : '']" v-model.trim="formData.emailAddress"
+              autocomplete="email">
+            <div class="invalid-feedback" v-if="formErrors.emailAddress">Please provide a valid Email Address.</div>
+          </div>
+          <div class="form-group">
+            <input type="number" class="form-control" placeholder="Phone Number"
+              :class="[formErrors.phNumber ? 'is-invalid' : '']" v-model.trim="formData.phNumber"
+              autocomplete="phNumber">
+            <div class="invalid-feedback" v-if="formErrors.phNumber">Please provide a valid Email.</div>
+          </div>
+          <div class="form-group">
+            <ajax-button :syncing="syncing" class="btn-dark btn-lg btn-block">Add User</ajax-button>
+          </div>
+        </ajax-form>
+      </div>
+    </div>
+  </modal>
+
+  <!-- edit User -->
+  <modal v-if="modal==='editUser'" @close="closeModal()" v-cloak>
+    <div class="modal-header">
+      <h2 class="modal-title">Edit User</h2>
+    </div>
+    <div class="modal-body">
+      <form method="put">
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input class="form-control" type="text" id="name" name="name" v-model="editUser.name">
+        </div>
+        <div class="form-group">
+          <label for="age">Age</label>
+          <input class="form-control" type="number" id="age" name="age" v-model="editUser.age">
+        </div>
+        <div class="form-group">
+          <label for="address1">Address1</label>
+          <input class="form-control" type="text" id="address1" name="address1" v-model="editUser.address1">
+        </div>
+        <div class="form-group">
+          <label for="address2">Address2</label>
+          <input class="form-control" type="text" id="address2" name="address2" v-model="editUser.address2">
+        </div>
+        <div class="form-group text-center">
+          <button class="btn btn-primary btn-sm btn-block" @click="editUserConfirm()">Save</button>
+        </div>
+      </form>
+    </div>
+  </modal>
+
+  <!-- Delete Confirmation Modal -->
+  <modal v-if="modal==='deleteUser'" @close="closeModal()" v-cloak>
+    <div class="modal-header">
+      <h2 class="modal-title">Confirmation</h2>
+    </div>
+    <div class="modal-body text-center p-3">
+      <hr>
+      <h5>
+        Are you sure you want to delete this user?
+      </h5>
+    </div>
+    <div class="modal-footer">
+      <!-- <button class="btn btn-sm btn-danger" href="/user/delete/deleteUser.id">Delete</button> -->
+      <button class="btn btn-danger" @click="deleteUserConfirm()">Delete</button>
+      <button type="button" data-dismiss="modal" class="btn btn-outline-info">Cancel</button>
+    </div>
+  </modal>
+
+
+  <!-- Add User Bootstrap Modal -->
+  <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title font-weight-bold" id="exampleModalLabel">Add User</h5>
+        </div>
+        <div class="modal-body">
+          <ajax-form action="addUser" :syncing.sync="syncing" :cloud-error.sync="cloudError" :form-data="formData"
+            :form-rules="formRules" :form-errors.sync="formErrors" @submitted="submittedForm()">
+            <div class="form-group">
+              <label for="name">Name</label>
+              <input type="text" class="form-control" placeholder="Name" :class="[formErrors.name ? 'is-invalid' : '']"
+                v-model.trim="formData.name" autocomplete="name" focus-first>
+              <div class="invalid-feedback" v-if="formErrors.name">Please provide a User Name.</div>
+            </div>
+            <div class="form-group">
+              <label for="email">Email Address</label>
+              <input type="string" class="form-control" placeholder="Email Address"
+                :class="[formErrors.emailAddress ? 'is-invalid' : '']" v-model.trim="formData.emailAddress"
+                autocomplete="email">
+              <div class="invalid-feedback" v-if="formErrors.emailAddress">Please provide a valid Email Address.</div>
+            </div>
+            <div class="form-group d-flex">
+              <div>
+                <label for="countryCode">Country Code</label>
+                <input type="number" class="form-control mr-3" placeholder="Country Code"
+                  :class="[formErrors.countryCode ? 'is-invalid' : '']" v-model.trim="formData.countryCode"
+                  autocomplete="countryCode">
+                <div class="invalid-feedback" v-if="formErrors.countryCode">Please provide a Country Code.</div>
+              </div>
+
+              <div style="width: 550px;" class="ml-2">
+                <label for="phNumber">Phone Number</label>
+                <input type="number" class="form-control" placeholder="Mobile Number"
+                  :class="[formErrors.phNumber ? 'is-invalid' : '']" v-model.trim="formData.phNumber"
+                  autocomplete="phNumber">
+                <div class="invalid-feedback" v-if="formErrors.phNumber">Please provide a valid Phone Number.</div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="name">Age</label>
+              <input type="number" class="form-control" placeholder="Age" :class="[formErrors.age ? 'is-invalid' : '']"
+                v-model.trim="formData.age" autocomplete="age">
+              <div class="invalid-feedback" v-if="formErrors.age">Please enter your Age.</div>
+            </div>
+            <div class="form-group">
+              <label for="address1">Address 1</label>
+              <input type="text" class="form-control" placeholder="Address 1"
+                :class="[formErrors.address1 ? 'is-invalid' : '']" v-model.trim="formData.address1"
+                autocomplete="address1">
+              <div class="invalid-feedback" v-if="formErrors.address1">Please provide a user address1.</div>
+            </div>
+            <div class="form-group">
+              <label for="address2">Address 2</label>
+              <input type="text" class="form-control" placeholder="Address 2(optional)"
+                :class="[formErrors.address2 ? 'is-invalid' : '']" v-model.trim="formData.address2"
+                autocomplete="address2">
+              <div class="invalid-feedback" v-if="formErrors.address2">Please provide a user address2.</div>
+            </div>
+            <div class="form-group d-flex">
+              <div>
+                <label for="city">City</label>
+                <input type="string" class="form-control mr-3" placeholder="City"
+                  :class="[formErrors.city ? 'is-invalid' : '']" v-model.trim="formData.city" autocomplete="city">
+                <div class="invalid-feedback" v-if="formErrors.city">Please provide a City.</div>
+              </div>
+
+              <div class="ml-2" style="width: 250px;">
+                <label for="zipCode">Zip Code</label>
+                <input type="string" class="form-control" placeholder="Zip Code"
+                  :class="[formErrors.zipCode ? 'is-invalid' : '']" v-model.trim="formData.zipCode"
+                  autocomplete="zipCode">
+                <div class="invalid-feedback" v-if="formErrors.zipCode">Please provide a valid Zip Code.</div>
+              </div>
+            </div>
+            <div class="d-flex">
+              <div class="form-group ml-auto">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <ajax-button :syncing="syncing" class="btn btn-primary">Add User</ajax-button>
+              </div>
+            </div>
+          </ajax-form>
+        </div>
+        <!-- <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div> -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit User Bootstrap Modal-->
+  <div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="editUserModal"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title font-weight-bold" id="editUserModal">Edit User</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form method="put">
+            <div class="form-group">
+              <label for="name">Name</label>
+              <input class="form-control" type="text" id="name" name="name" v-model="editUser.name">
+            </div>
+            <div class="form-group">
+              <label for="emailAddress">Email Address</label>
+              <input class="form-control" type="text" id="emailAddress" name="emailAddress" v-model="editUser.emailAddress">
+            </div>
+            <div class="form-group d-flex">
+              <div>
+                <label for="countryCode">Country Code</label>
+                <input class="form-control" type="number" id="countryCode" name="countryCode"
+                  v-model="editUser.countryCode">
+              </div>
+
+              <div class="ml-2">
+                <label for="phNumber">Phone Number</label>
+                <input class="form-control" type="number" id="phNumber" name="phNumber" v-model="editUser.phNumber">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="age">Age</label>
+              <input class="form-control" type="number" id="age" name="age" v-model="editUser.age">
+            </div>
+            <div class="form-group">
+              <label for="address1">Address 1</label>
+              <input class="form-control" type="text" id="address1" name="address1" v-model="editUser.address1">
+            </div>
+            <div class="form-group">
+              <label for="address2">Address 2 <small>(optional)</small></label>
+              <input class="form-control" type="text" id="address2" name="address2" v-model="editUser.address2">
+            </div>
+            <div class="form-group d-flex">
+              <div>
+                <label for="city">City</label>
+                <input type="string" class="form-control mr-3" id="city" name="city" v-model="editUser.city">
+              </div>
+
+              <div class="ml-2">
+                <label for="zipCode">Zip Code</label>
+                <input type="string" class="form-control mr-3" id="zipCode" name="zipCode" v-model="editUser.zipCode">
+              </div>
+            </div>
+            <div class="form-group text-center">
+              <button class="btn btn-primary btn-sm btn-block" @click="editUserConfirm()">Save</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete User Bootstrap Modal -->
+  <div class="modal fade" id="deleteUserModal" tabindex="-1" role="dialog" aria-labelledby="deleteUserModal"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title font-weight-bold" id="deleteUserModal">Delete User</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to delete <b>{{userToDelete.name}}</b>?
+        </div>
+        <div class="modal-footer">
+          <button type="button" data-dismiss="modal" class="btn btn-sm btn-outline-secondary">Cancel</button>
+          <button class="btn btn-sm btn-danger" @click="deleteUserConfirm()">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- User Details Bootstrap Modal -->
+  <div class="modal fade" id="userDetailsModal" tabindex="-1" role="dialog" aria-labelledby="userDetailsModal"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title font-weight-bold" id="userDetailsModal">User Details</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to delete this user?
+        </div>
+        <div class="modal-footer">
+          <button type="button" data-dismiss="modal" class="btn btn-sm btn-outline-secondary">Cancel</button>
+          <button class="btn btn-sm btn-danger" @click="deleteUserConfirm()">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<%- /* Expose server-rendered data as window.SAILS_LOCALS :: */ exposeLocalsToBrowser() %>

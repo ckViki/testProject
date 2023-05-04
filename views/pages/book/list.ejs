@@ -1,0 +1,41 @@
+<div id="list" v-cloak>
+  <div class="container">
+    <div class="d-flex mt-5">
+      <div class="text-center">
+        <h4>Book List</h4>
+      </div>
+      <div class="ml-auto">
+        <a class="btn btn-primary btn-sm" href="/book/add">Add Book</a>
+      </div>
+    </div>
+    <table class="table border-2">
+      <tr class="text-center">
+        <th>#</th>
+        <th>Name</th>
+        <th>Autor</th>
+        <th>Price</th>
+        <th>Action</th>
+      </tr>
+      <% for(let [index,book] of books.entries()) { %>
+        <tr class="text-center">
+          <td class="col-1">
+            <%= index+1 %>
+          </td>
+          <td class="col-3">
+            <%= book.name %>
+          </td>
+          <td class="col-2">
+            <%= book.autor %>
+          </td>
+          <td class="col-3">
+            <%= book.price %>
+          </td>
+          <td class="col-3"><a class="btn btn-sm btn-primary" href="/book/edit/<%= book.id %>">Edit</a>
+            <a class="btn btn-sm btn-danger" href="/book/delete/<%= book.id %>">Delete</a>
+          </td>
+        </tr>
+        <% } %>
+    </table>
+  </div>
+</div>
+<%- /* Expose server-rendered data as window.SAILS_LOCALS :: */ exposeLocalsToBrowser() %>
